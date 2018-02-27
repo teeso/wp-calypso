@@ -14,6 +14,7 @@ import {
 	flatten,
 	flow,
 	get,
+	isEmpty,
 	isEqual,
 	map,
 	merge,
@@ -34,6 +35,7 @@ import {
 	isDomainRedemption,
 	isDomainRegistration,
 	isDomainTransfer,
+	isDotComPlan,
 	isBundled,
 	isFreeTrial,
 	isFreeWordPressComDomain,
@@ -50,7 +52,6 @@ import {
 	isVideoPress,
 } from 'lib/products-values';
 import sortProducts from 'lib/products-values/sort';
-import { PLAN_PERSONAL } from 'lib/plans/constants';
 import { getTld } from 'lib/domains';
 import { domainProductSlugs } from 'lib/domains/constants';
 
@@ -62,6 +63,7 @@ import {
 	PLAN_JETPACK_PREMIUM_MONTHLY,
 	PLAN_JETPACK_BUSINESS_MONTHLY,
 	PLAN_JETPACK_PERSONAL_MONTHLY,
+	PLAN_PERSONAL,
 } from 'lib/plans/constants';
 
 /**
@@ -110,6 +112,10 @@ export function cartItemShouldReplaceCart( cartItem, cart ) {
 		return true;
 	}
 
+	if ( isDotComPlan( cartItem ) && hasOnlyDomainProductsForDomain( cart, cartItem.meta ) ) {
+		return false;
+	}
+
 	if ( ! isRenewal( cartItem ) && hasRenewalItem( cart ) ) {
 		// all items should replace the cart if the cart contains a renewal
 		return true;
@@ -137,11 +143,25 @@ export function cartItemShouldReplaceCart( cartItem, cart ) {
  */
 export function remove( cartItemToRemove ) {
 	function rejectItem( products ) {
-		return reject( products, function( existingCartItem ) {
+		const productsLeft = reject( products, function( existingCartItem ) {
 			return (
 				cartItemToRemove.product_slug === existingCartItem.product_slug &&
 				cartItemToRemove.meta === existingCartItem.meta
 			);
+		} );
+
+		const isRemovingDomainProduct =
+			isDomainMapping( cartItemToRemove ) || isDomainRegistration( cartItemToRemove );
+		return productsLeft.map( existingCartItem => {
+			if (
+				isPlan( existingCartItem ) &&
+				isRemovingDomainProduct &&
+				cartItemToRemove.meta === existingCartItem.meta
+			) {
+				return Object.assign( {}, existingCartItem, { meta: '' } );
+			}
+
+			return existingCartItem;
 		} );
 	}
 
@@ -247,6 +267,25 @@ export function hasPlan( cart ) {
 export function hasOnlyBundledDomainProducts( cart ) {
 	return (
 		cart && every( [ ...getDomainRegistrations( cart ), ...getDomainTransfers( cart ) ], isBundled )
+	);
+}
+
+/**
+ * Does the cart contain only domains and transfers products for the given domain
+ *
+ * @param {Object} cart - cart as `CartValue` object
+ * @param {String} domainName - domain name
+ * @return {Boolean} true if there are only domains and transfers products for the given domain
+ */
+function hasOnlyDomainProductsForDomain( cart, domainName = '' ) {
+	if ( isEmpty( domainName ) ) {
+		return false;
+	}
+	return (
+		cart &&
+		every( [ ...getDomainRegistrations( cart ), ...getDomainTransfers( cart ) ], cartItem => {
+			return cartItem.meta === domainName;
+		} )
 	);
 }
 
@@ -390,10 +429,10 @@ export function hasRenewableSubscription( cart ) {
  * Creates a new shopping cart item for a plan.
  *
  * @param {Object} productSlug - the unique string that identifies the product
- * @param {boolean} isFreeTrialItem - optionally specifies if this is a free trial or not
+ * @param {Object} properties - list of properties
  * @returns {Object} the new item as `CartItemValue` object
  */
-export function planItem( productSlug, isFreeTrialItem = false ) {
+export function planItem( productSlug, properties ) {
 	// Free plan doesn't have shopping cart.
 	if ( productSlug === PLAN_FREE ) {
 		return null;
@@ -401,7 +440,8 @@ export function planItem( productSlug, isFreeTrialItem = false ) {
 
 	return {
 		product_slug: productSlug,
-		free_trial: isFreeTrialItem,
+		free_trial: get( properties, 'isFreeTrialItem', false ),
+		meta: get( properties, 'domain', '' ),
 	};
 }
 
@@ -413,7 +453,7 @@ export function planItem( productSlug, isFreeTrialItem = false ) {
  * @returns {Object} the new item as `CartItemValue` object
  */
 export function personalPlan( slug, properties ) {
-	return planItem( slug, properties.isFreeTrial );
+	return planItem( slug, properties );
 }
 
 /**
@@ -424,7 +464,7 @@ export function personalPlan( slug, properties ) {
  * @returns {Object} the new item as `CartItemValue` object
  */
 export function premiumPlan( slug, properties ) {
-	return planItem( slug, properties.isFreeTrial );
+	return planItem( slug, properties );
 }
 
 /**
@@ -435,7 +475,7 @@ export function premiumPlan( slug, properties ) {
  * @returns {Object} the new item as `CartItemValue` object
  */
 export function businessPlan( slug, properties ) {
-	return planItem( slug, properties.isFreeTrial );
+	return planItem( slug, properties );
 }
 
 /**
@@ -696,7 +736,7 @@ export function getRenewalItemFromProduct( product, properties ) {
 	}
 
 	if ( isPlan( product ) ) {
-		cartItem = planItem( product.product_slug, false );
+		cartItem = planItem( product.product_slug );
 	}
 
 	if ( isGoogleApps( product ) ) {
