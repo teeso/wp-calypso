@@ -47,8 +47,8 @@ export class HappinessSupport extends Component {
 	getHeadingText() {
 		const { isJetpackFreePlan, translate } = this.props;
 		return isJetpackFreePlan
-			? translate( 'Find answers in our documentation' )
-			: translate( 'Enjoy priority support from our Happiness Engineers' );
+			? translate( 'Support documentation' )
+			: translate( 'Priority support' );
 	}
 
 	getSupportText() {
