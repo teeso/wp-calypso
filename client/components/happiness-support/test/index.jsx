@@ -32,9 +32,7 @@ describe( 'HappinessSupport', () => {
 	test( 'should render translated heading content', () => {
 		const heading = wrapper.find( 'h3' );
 		expect( heading ).to.have.length( 1 );
-		expect( heading.props().children ).to.equal(
-			'Translated: Enjoy priority support from our Happiness Engineers'
-		);
+		expect( heading.props().children ).to.equal( 'Translated: Priority support' );
 	} );
 
 	test( 'should render translated help content', () => {
@@ -47,7 +45,7 @@ describe( 'HappinessSupport', () => {
 
 	test( 'should render a translated support button', () => {
 		expect( wrapper.find( 'Button.happiness-support__support-button' ).props().children ).to.equal(
-			'Translated: Search our support site'
+			'Translated: Support documentation'
 		);
 	} );
 
