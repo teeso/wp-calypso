@@ -1,7 +1,7 @@
 Query Jetpack Onboarding Settings
 =================================
 
-`<QueryJetpackOnboardingSettings />` is a React component used in managing network requests for Jetpack Onboarding Settings.
+`<QueryJetpackSettings />` is a React component used in managing network requests for Jetpack Onboarding Settings.
 
 ## Usage
 
@@ -13,12 +13,12 @@ import { connect } from 'react-redux';
 import { map } from 'lodash';
 
 import { getJetpackOnboardingSettings } from 'state/selectors';
-import QueryJetpackOnboardingSettings from 'components/data/query-jetpack-onboarding-settings';
+import QueryJetpackSettings from 'components/data/query-jetpack-settings';
 
 function MyJetpackOnboardingSettings( { settings, siteId } ) {
 	return (
 		<div>
-			<QueryJetpackOnboardingSettings siteId={ siteId } />
+			<QueryJetpackSettings siteId={ siteId } />
 			{ map( settings, ( value, name ) => (
 				<div>{ name }: { value.toString() }</div>
 			) }
