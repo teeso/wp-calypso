@@ -33,7 +33,7 @@ class StoreStatsReferrerWidget extends Component {
 		selectedDate: PropTypes.string.isRequired,
 		unit: PropTypes.string.isRequired,
 		queryParams: PropTypes.object.isRequired,
-		slug: PropTypes.string,
+		slug: PropTypes.string.isRequired,
 	};
 
 	isPreCollection( selectedData ) {
@@ -69,8 +69,15 @@ class StoreStatsReferrerWidget extends Component {
 			: [ translate( 'No referral activity on this date' ) ];
 	}
 
+	onSelect = event => {
+		const { onSelect } = this.props;
+		if ( onSelect ) {
+			onSelect( event );
+		}
+	};
+
 	render() {
-		const { data, selectedDate, translate, unit, slug, queryParams } = this.props;
+		const { data, selectedDate, translate, unit, slug, queryParams, filter } = this.props;
 		const basePath = '/store/stats/referrers';
 		const selectedData = find( data, d => d.date === selectedDate ) || { data: [] };
 		if ( selectedData.data.length === 0 ) {
@@ -81,7 +88,10 @@ class StoreStatsReferrerWidget extends Component {
 				</Card>
 			);
 		}
-		const sortedAndTrimmedData = sortBySales( selectedData.data, 5 );
+		const filteredData = filter && selectedData.data.filter( d => d.referrer.match( filter ) );
+		const sortedAndTrimmedData = filteredData
+			? sortBySales( filteredData )
+			: sortBySales( selectedData.data, 5 );
 		const extent = [ 0, d3Max( sortedAndTrimmedData.map( d => d.sales ) ) ];
 		const header = (
 			<TableRow isHeader>
@@ -97,13 +107,15 @@ class StoreStatsReferrerWidget extends Component {
 					const widgetPath = getWidgetPath(
 						unit,
 						slug,
-						Object.assign( {}, { referrer: d.referrer }, queryParams )
+						Object.assign( {}, queryParams, { referrer: d.referrer } )
 					);
 					const href = `${ basePath }${ widgetPath }`;
 					return (
 						<TableRow key={ d.referrer }>
 							<TableItem isTitle>
-								<a href={ href }>{ d.referrer }</a>
+								<a href={ href } onClick={ this.onSelect }>
+									{ d.referrer }
+								</a>
 							</TableItem>
 							<TableItem>
 								<HorizontalBar
