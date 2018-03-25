@@ -111,12 +111,8 @@ class StoreStatsReferrerWidget extends Component {
 					);
 					const href = `${ basePath }${ widgetPath }`;
 					return (
-						<TableRow key={ d.referrer }>
-							<TableItem isTitle>
-								<a href={ href } onClick={ this.onSelect }>
-									{ d.referrer }
-								</a>
-							</TableItem>
+						<TableRow key={ d.referrer } href={ href }>
+							<TableItem isTitle>{ d.referrer }</TableItem>
 							<TableItem>
 								<HorizontalBar
 									extent={ extent }

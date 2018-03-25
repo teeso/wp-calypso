@@ -37,7 +37,7 @@ class Referrers extends Component {
 	};
 
 	state = {
-		filter: null,
+		filter: '',
 	};
 
 	onSearch = str => {
@@ -56,12 +56,13 @@ class Referrers extends Component {
 		const { siteId, query, data, selectedDate, unit, slug, translate, queryParams } = this.props;
 		const unitSelectedDate = getUnitPeriod( selectedDate, unit );
 		const selectedData = find( data, d => d.date === unitSelectedDate ) || { data: [] };
+		const showSearch = selectedData.data.length > 5;
 		const selectedReferrer = find(
 			selectedData.data,
 			d => queryParams.referrer && queryParams.referrer === d.referrer
 		);
 		return (
-			<Main wideLayout>
+			<Main className="referrers woocommerce" wideLayout>
 				{ siteId && <QuerySiteStats statType={ STAT_TYPE } siteId={ siteId } query={ query } /> }
 				<StoreStatsPeriodNav
 					type="referrers"
@@ -72,31 +73,26 @@ class Referrers extends Component {
 					statType={ STAT_TYPE }
 					title={ `Store Referrers${ queryParams.referrer ? ' - ' + queryParams.referrer : '' }` }
 				/>
-				<SearchCard
-					onSearch={ this.onSearch }
-					placeholder="Search Referrers"
-					value={ this.state.filter }
-				/>
-				<Module
-					siteId={ siteId }
-					emptyMessage={ translate( 'No referrers found' ) }
-					query={ query }
-					statType={ STAT_TYPE }
-				>
-					{ this.state.filter && (
-						<StoreStatsReferrerWidget
-							unit={ unit }
-							siteId={ siteId }
-							query={ query }
-							statType={ STAT_TYPE }
-							selectedDate={ unitSelectedDate }
-							queryParams={ queryParams }
-							filter={ this.state.filter }
-							slug={ slug }
-							onSelect={ this.onSelect }
-						/>
-					) }
-				</Module>
+				{ showSearch && (
+					<SearchCard
+						onSearch={ this.onSearch }
+						placeholder="Search Referrers"
+						value={ this.state.filter }
+					/>
+				) }
+				{ ( this.state.filter || ! showSearch ) && (
+					<StoreStatsReferrerWidget
+						unit={ unit }
+						siteId={ siteId }
+						query={ query }
+						statType={ STAT_TYPE }
+						selectedDate={ unitSelectedDate }
+						queryParams={ queryParams }
+						filter={ this.state.filter }
+						slug={ slug }
+						onSelect={ this.onSelect }
+					/>
+				) }
 				<Module
 					siteId={ siteId }
 					emptyMessage={ translate( 'No referrers found' ) }
