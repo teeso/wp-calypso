@@ -35,10 +35,12 @@ class Referrers extends Component {
 		selectedDate: PropTypes.string,
 		unit: PropTypes.oneOf( [ 'day', 'week', 'month', 'year' ] ),
 		slug: PropTypes.string,
+		limit: PropTypes.number,
 	};
 
 	state = {
 		filter: '',
+		searchOpen: false,
 	};
 
 	onSearch = str => {
@@ -53,12 +55,27 @@ class Referrers extends Component {
 		} );
 	};
 
+	onSearchOpen = () => {
+		this.setState( {
+			searchOpen: true,
+		} );
+	};
+
+	onSearchBlur = () => {
+		setTimeout( () => {
+			this.setState( {
+				searchOpen: false,
+			} );
+		} );
+	};
+
 	render() {
 		const { siteId, query, data, selectedDate, unit, slug, translate, queryParams } = this.props;
+		const { filter, searchOpen } = this.state;
 		const unitSelectedDate = getUnitPeriod( selectedDate, unit );
 		const selectedData = find( data, d => d.date === unitSelectedDate ) || { data: [] };
 		const showSearch = selectedData.data.length > 5;
-		const showWidget = this.state.filter || ! showSearch;
+		const showWidget = searchOpen || filter || ! showSearch;
 		const selectedReferrer = find(
 			selectedData.data,
 			d => queryParams.referrer && queryParams.referrer === d.referrer
@@ -80,7 +97,9 @@ class Referrers extends Component {
 						className={ classnames( 'referrers__search-box', { 'is-open': showWidget } ) }
 						onSearch={ this.onSearch }
 						placeholder="Search Referrers"
-						value={ this.state.filter }
+						value={ filter }
+						onSearchOpen={ this.onSearchOpen }
+						onBlur={ this.onSearchBlur }
 					/>
 				) }
 				{ showWidget && (
@@ -98,9 +117,10 @@ class Referrers extends Component {
 							statType={ STAT_TYPE }
 							selectedDate={ unitSelectedDate }
 							queryParams={ queryParams }
-							filter={ this.state.filter }
+							filter={ filter }
 							slug={ slug }
 							afterSelect={ this.afterSelect }
+							limit={ 50 }
 						/>
 					</Module>
 				) }

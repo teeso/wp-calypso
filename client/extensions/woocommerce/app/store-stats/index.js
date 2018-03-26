@@ -124,6 +124,7 @@ class StoreStats extends Component {
 								query={ referrerQuery }
 								statType="statsStoreReferrers"
 								selectedDate={ unitSelectedDate }
+								limit={ 5 }
 							/>
 						</Module>
 					</div>

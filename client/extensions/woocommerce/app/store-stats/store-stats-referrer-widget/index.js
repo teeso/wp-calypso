@@ -77,7 +77,7 @@ class StoreStatsReferrerWidget extends Component {
 	};
 
 	render() {
-		const { data, selectedDate, translate, unit, slug, queryParams, filter } = this.props;
+		const { data, selectedDate, translate, unit, slug, queryParams, filter, limit } = this.props;
 		const basePath = '/store/stats/referrers';
 		const selectedData = find( data, d => d.date === selectedDate ) || { data: [] };
 		if ( selectedData.data.length === 0 ) {
@@ -91,7 +91,7 @@ class StoreStatsReferrerWidget extends Component {
 		const filteredData = filter && selectedData.data.filter( d => d.referrer.match( filter ) );
 		const sortedAndTrimmedData = filteredData
 			? sortBySales( filteredData )
-			: sortBySales( selectedData.data, 5 );
+			: sortBySales( selectedData.data, limit );
 		const extent = [ 0, d3Max( sortedAndTrimmedData.map( d => d.sales ) ) ];
 		const header = (
 			<TableRow isHeader>
