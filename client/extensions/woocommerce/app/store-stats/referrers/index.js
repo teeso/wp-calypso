@@ -121,6 +121,7 @@ class Referrers extends Component {
 							slug={ slug }
 							afterSelect={ this.afterSelect }
 							limit={ 50 }
+							pageType="referrers"
 						/>
 					</Module>
 				) }

@@ -125,6 +125,7 @@ class StoreStats extends Component {
 								statType="statsStoreReferrers"
 								selectedDate={ unitSelectedDate }
 								limit={ 5 }
+								pageType="orders"
 							/>
 						</Module>
 					</div>

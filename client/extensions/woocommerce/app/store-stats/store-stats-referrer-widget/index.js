@@ -34,6 +34,7 @@ class StoreStatsReferrerWidget extends Component {
 		unit: PropTypes.string.isRequired,
 		queryParams: PropTypes.object.isRequired,
 		slug: PropTypes.string.isRequired,
+		pageType: PropTypes.string.isRequired,
 	};
 
 	isPreCollection( selectedData ) {
@@ -50,9 +51,9 @@ class StoreStatsReferrerWidget extends Component {
 	}
 
 	getEmptyDataMessage( selectedData ) {
-		const { translate, slug, queryParams } = this.props;
+		const { translate, slug, queryParams, pageType } = this.props;
 		if ( ! this.hasNosaraJobRun( selectedData ) ) {
-			const href = `/store/stats/orders${ getWidgetPath( 'week', slug, queryParams ) }`;
+			const href = `/store/stats/${ pageType }${ getWidgetPath( 'week', slug, queryParams ) }`;
 			const primary = translate( 'Data is being processed – check back soon' );
 			const secondary = translate(
 				'Expand to a {{a}}wider{{/a}} view to see your latest referrers',
