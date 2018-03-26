@@ -19,7 +19,7 @@ import { requestJetpackOnboardingSettings } from 'state/jetpack-onboarding/actio
  * @param  {Object}  query       An optional query to be passed to the JP settings endpoint
  * @return {Boolean}             Whether Jetpack settings are currently being requested
  */
-export default function isRequestingJetpackOnboardingSettings( state, siteId, query ) {
+export default function isRequestingJetpackSettings( state, siteId, query ) {
 	return get(
 		getRequest( state, requestJetpackOnboardingSettings( siteId, query ) ),
 		'isLoading',
