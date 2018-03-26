@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { find } from 'lodash';
 import { localize } from 'i18n-calypso';
+import classnames from 'classnames';
 
 /**
  * Internal dependencies
@@ -57,6 +58,7 @@ class Referrers extends Component {
 		const unitSelectedDate = getUnitPeriod( selectedDate, unit );
 		const selectedData = find( data, d => d.date === unitSelectedDate ) || { data: [] };
 		const showSearch = selectedData.data.length > 5;
+		const showWidget = this.state.filter || ! showSearch;
 		const selectedReferrer = find(
 			selectedData.data,
 			d => queryParams.referrer && queryParams.referrer === d.referrer
@@ -75,45 +77,47 @@ class Referrers extends Component {
 				/>
 				{ showSearch && (
 					<SearchCard
+						className={ classnames( 'referrers__search-box', { 'is-open': showWidget } ) }
 						onSearch={ this.onSearch }
 						placeholder="Search Referrers"
 						value={ this.state.filter }
 					/>
 				) }
-				{ ( this.state.filter || ! showSearch ) && (
-					<StoreStatsReferrerWidget
-						unit={ unit }
+				{ showWidget && (
+					<Module
+						className="referrers__search-dropdown"
 						siteId={ siteId }
+						emptyMessage={ translate( 'No data found' ) }
 						query={ query }
 						statType={ STAT_TYPE }
-						selectedDate={ unitSelectedDate }
-						queryParams={ queryParams }
-						filter={ this.state.filter }
-						slug={ slug }
-						afterSelect={ this.afterSelect }
-					/>
+					>
+						<StoreStatsReferrerWidget
+							unit={ unit }
+							siteId={ siteId }
+							query={ query }
+							statType={ STAT_TYPE }
+							selectedDate={ unitSelectedDate }
+							queryParams={ queryParams }
+							filter={ this.state.filter }
+							slug={ slug }
+							afterSelect={ this.afterSelect }
+						/>
+					</Module>
 				) }
-				<Module
-					siteId={ siteId }
-					emptyMessage={ translate( 'No referrers found' ) }
-					query={ query }
-					statType={ STAT_TYPE }
-				>
+				{ selectedReferrer && (
 					<table>
 						<tbody>
-							{ selectedReferrer && (
-								<tr key={ selectedReferrer.referrer }>
-									<td>{ selectedReferrer.date }</td>
-									<td>{ selectedReferrer.referrer }</td>
-									<td>{ selectedReferrer.product_views }</td>
-									<td>{ selectedReferrer.add_to_carts }</td>
-									<td>{ selectedReferrer.product_purchases }</td>
-									<td>${ selectedReferrer.sales }</td>
-								</tr>
-							) }
+							<tr key={ selectedReferrer.referrer }>
+								<td>{ selectedReferrer.date }</td>
+								<td>{ selectedReferrer.referrer }</td>
+								<td>{ selectedReferrer.product_views }</td>
+								<td>{ selectedReferrer.add_to_carts }</td>
+								<td>{ selectedReferrer.product_purchases }</td>
+								<td>${ selectedReferrer.sales }</td>
+							</tr>
 						</tbody>
 					</table>
-				</Module>
+				) }
 				<JetpackColophon />
 			</Main>
 		);
