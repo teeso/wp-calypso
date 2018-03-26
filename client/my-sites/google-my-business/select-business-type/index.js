@@ -16,12 +16,14 @@ import Gridicon from 'gridicons';
 import ActionCard from 'components/action-card';
 import Button from 'components/button';
 import CompactCard from 'components/card/compact';
-import config from 'config';
 import ExternalLink from 'components/external-link';
 import GoogleMyBusinessConnectButton from 'my-sites/google-my-business/connect-button';
 import HeaderCake from 'components/header-cake';
 import Main from 'components/main';
+import config from 'config';
 import { recordTracksEvent } from 'state/analytics/actions';
+import { canCurrentUser } from 'state/selectors';
+import { getSelectedSiteId } from 'state/ui/selectors';
 
 class SelectBusinessType extends Component {
 	static propTypes = {
@@ -59,11 +61,11 @@ class SelectBusinessType extends Component {
 	};
 
 	render() {
-		const { translate, siteId } = this.props;
+		const { canUserManageOptions, translate, siteId } = this.props;
 
 		let connectButton;
 
-		if ( config.isEnabled( 'google-my-business' ) ) {
+		if ( config.isEnabled( 'google-my-business' ) && canUserManageOptions ) {
 			connectButton = (
 				<GoogleMyBusinessConnectButton
 					onClick={ this.trackCreateMyListingClick }
@@ -158,4 +160,9 @@ class SelectBusinessType extends Component {
 	}
 }
 
-export default connect( undefined, { recordTracksEvent } )( localize( SelectBusinessType ) );
+export default connect(
+	state => ( {
+		canUserManageOptions: canCurrentUser( state, getSelectedSiteId( state ), 'manage_options' ),
+	} ),
+	{ recordTracksEvent }
+)( localize( SelectBusinessType ) );
