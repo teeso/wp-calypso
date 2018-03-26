@@ -46,7 +46,7 @@ class Referrers extends Component {
 		} );
 	};
 
-	onSelect = () => {
+	afterSelect = () => {
 		this.setState( {
 			filter: '',
 		} );
@@ -90,7 +90,7 @@ class Referrers extends Component {
 						queryParams={ queryParams }
 						filter={ this.state.filter }
 						slug={ slug }
-						onSelect={ this.onSelect }
+						afterSelect={ this.afterSelect }
 					/>
 				) }
 				<Module

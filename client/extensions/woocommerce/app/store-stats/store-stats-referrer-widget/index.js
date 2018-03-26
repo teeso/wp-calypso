@@ -69,10 +69,10 @@ class StoreStatsReferrerWidget extends Component {
 			: [ translate( 'No referral activity on this date' ) ];
 	}
 
-	onSelect = event => {
-		const { onSelect } = this.props;
-		if ( onSelect ) {
-			onSelect( event );
+	afterSelect = () => {
+		const { afterSelect } = this.props;
+		if ( afterSelect ) {
+			afterSelect();
 		}
 	};
 
@@ -111,7 +111,7 @@ class StoreStatsReferrerWidget extends Component {
 					);
 					const href = `${ basePath }${ widgetPath }`;
 					return (
-						<TableRow key={ d.referrer } href={ href }>
+						<TableRow key={ d.referrer } href={ href } afterHref={ this.afterSelect }>
 							<TableItem isTitle>{ d.referrer }</TableItem>
 							<TableItem>
 								<HorizontalBar
