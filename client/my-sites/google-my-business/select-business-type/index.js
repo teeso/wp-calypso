@@ -8,16 +8,19 @@ import PropTypes from 'prop-types';
 import { localize } from 'i18n-calypso';
 import { connect } from 'react-redux';
 import page from 'page';
+import Gridicon from 'gridicons';
 
 /**
  * Internal dependencies
  */
-import HeaderCake from 'components/header-cake';
-import CompactCard from 'components/card/compact';
 import ActionCard from 'components/action-card';
+import Button from 'components/button';
+import CompactCard from 'components/card/compact';
+import ExternalLink from 'components/external-link';
+import GoogleMyBusinessConnectButton from 'my-sites/google-my-business/connect-button';
+import HeaderCake from 'components/header-cake';
 import Main from 'components/main';
 import { recordTracksEvent } from 'state/analytics/actions';
-import ExternalLink from 'components/external-link';
 
 class SelectBusinessType extends Component {
 	static propTypes = {
@@ -42,6 +45,12 @@ class SelectBusinessType extends Component {
 		this.props.recordTracksEvent(
 			'calypso_google_my_business_select_business_type_google_my_business_link_click'
 		);
+	};
+
+	handleConnect = () => {
+		/* eslint-disable no-console */
+		console.log( 'connected' );
+		// TODO: handle redirect to the "Create My Listings" page here
 	};
 
 	goBack = () => {
@@ -96,30 +105,38 @@ class SelectBusinessType extends Component {
 						comment: 'In the context of a business activity, brick and mortar or online service',
 					} ) }
 					mainText={ translate(
-						'Your business has a physical location customers can visit, ' +
-							'or provides goods and services to local customers, or both.'
+						'My business has a physical location customers can visit, ' +
+						'or provides goods and services to local customers, or both.'
 					) }
-					buttonText={ translate( 'Create Your Listing', {
-						comment: 'Call to Action to add a business listing to Google My Business',
-					} ) }
-					buttonIcon="external"
-					buttonPrimary={ true }
-					buttonHref="https://www.google.com/business/"
-					buttonTarget="_blank"
-					buttonOnClick={ this.trackCreateMyListingClick }
-				/>
+				>
+					<div className="select-business-type__cta-card-button-container">
+						<GoogleMyBusinessConnectButton
+							onClick={ this.trackCreateMyListingClick }
+							onConnect={ this.handleConnect }
+						>
+							{ translate( 'Create Your Listing', {
+								comment: 'Call to Action to add a business listing to Google My Business',
+							} ) }
+						</GoogleMyBusinessConnectButton>
+					</div>
+				</ActionCard>
 
 				<ActionCard
 					headerText={ translate( 'Online Only', {
-						comment: 'In the context of a business activity, as opposed to a brick and mortar',
+								comment: 'In the context of a business activity, as opposed to a brick and mortar',
 					} ) }
 					mainText={ translate(
-						"Don't provide in-person services? Learn more about reaching your customers online."
+								"Don't provide in-person services? Learn more about reaching your customers online."
 					) }
-					buttonText={ translate( 'Optimize Your SEO', { comment: 'Call to Action button' } ) }
-					buttonHref={ '/settings/traffic/' + siteId }
-					buttonOnClick={ this.trackOptimizeYourSEOClick }
-				/>
+				>
+					<Button
+						href={ '/settings/traffic/' + siteId }
+						onClick={ this.trackOptimizeYourSEOClick }
+					>
+						{ translate( 'Optimize Your SEO', { comment: 'Call to Action button' } ) }
+						<Gridicon icon="external" />
+					</Button>
+				</ActionCard>
 			</Main>
 		);
 	}
