@@ -46,6 +46,8 @@ export const SITE_REQUEST_OPTIONS = join( [
 	'podcasting_archive',
 	'is_domain_only',
 	'default_sharing_status',
+	'default_ping_status',
+	'default_comment_status',
 	'default_likes_enabled',
 	'wordads',
 	'upgraded_filetypes_enabled',
