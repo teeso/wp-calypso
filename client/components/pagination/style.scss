@@ -3,6 +3,22 @@
 
 .pagination {
 	width: 100%;
+
+	&.is-compact .pagination__list-item  {
+		.button {
+			padding: 4px 6px;
+		}
+
+		&.pagination__ellipsis span {
+			padding: 4px 6px;
+		}
+
+		&.pagination__arrow .button {
+			padding: 5px 5px;
+		}
+
+
+	}
 }
 
 .pagination__list {
