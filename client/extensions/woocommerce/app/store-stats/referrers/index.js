@@ -80,6 +80,9 @@ class Referrers extends Component {
 			selectedData.data,
 			d => queryParams.referrer && queryParams.referrer === d.referrer
 		);
+		const title = `${ translate( 'Store Referrers' ) }${
+			queryParams.referrer ? ' - ' + queryParams.referrer : ''
+		}`;
 		return (
 			<Main className="referrers woocommerce" wideLayout>
 				{ siteId && <QuerySiteStats statType={ STAT_TYPE } siteId={ siteId } query={ query } /> }
@@ -90,7 +93,7 @@ class Referrers extends Component {
 					slug={ slug }
 					query={ query }
 					statType={ STAT_TYPE }
-					title={ `Store Referrers${ queryParams.referrer ? ' - ' + queryParams.referrer : '' }` }
+					title={ title }
 				/>
 				{ showSearch && (
 					<SearchCard
